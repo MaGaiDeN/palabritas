@@ -1,29 +1,40 @@
-import { X } from 'lucide-react';
-import { GameState } from '../types/game';
-
 interface StatsProps {
-  stats: GameState['stats'];
-  gameStatus: GameState['gameStatus'];
+  stats: {
+    played: number;
+    won: number;
+    currentStreak: number;
+    maxStreak: number;
+    guessDistribution: number[];
+  };
+  gameStatus: 'playing' | 'won' | 'lost';
   solution: string;
   onClose: () => void;
+  onPlayAgain: () => void;
 }
 
-const Stats = ({ stats, gameStatus, solution, onClose }: StatsProps) => {
+export const Stats: React.FC<StatsProps> = ({
+  stats,
+  gameStatus,
+  solution,
+  onClose,
+  onPlayAgain
+}) => {
   const winPercentage = stats.played > 0 
     ? Math.round((stats.won / stats.played) * 100)
     : 0;
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4">
-      <div className="bg-gray-800 rounded-lg p-6 max-w-sm w-full relative animate-slide-up">
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 p-1 hover:bg-gray-700 rounded-full"
-        >
-          <X size={20} />
-        </button>
-
-        <h2 className="text-2xl font-bold mb-6 text-center">Estadísticas</h2>
+      <div className="bg-gray-800 p-6 rounded-lg max-w-sm w-full">
+        <h2 className="text-2xl font-bold mb-4">
+          {gameStatus === 'won' ? '¡Felicidades!' : 'Juego terminado'}
+        </h2>
+        
+        {gameStatus !== 'playing' && (
+          <p className="mb-4">
+            La palabra era: <strong>{solution}</strong>
+          </p>
+        )}
 
         <div className="grid grid-cols-4 gap-4 mb-6">
           <div className="text-center">
@@ -63,19 +74,20 @@ const Stats = ({ stats, gameStatus, solution, onClose }: StatsProps) => {
           ))}
         </div>
 
-        {gameStatus !== 'playing' && (
-          <div className="mt-6 text-center">
-            <p className="text-lg mb-2">
-              {gameStatus === 'won' ? '¡Felicitaciones!' : `La palabra era: ${solution}`}
-            </p>
-            <button
-              onClick={() => window.location.reload()}
-              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors"
-            >
-              Jugar de nuevo
-            </button>
-          </div>
-        )}
+        <div className="flex gap-2 mt-4">
+          <button
+            onClick={onPlayAgain}
+            className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded"
+          >
+            Jugar de nuevo
+          </button>
+          <button
+            onClick={onClose}
+            className="bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded"
+          >
+            Cerrar
+          </button>
+        </div>
       </div>
     </div>
   );

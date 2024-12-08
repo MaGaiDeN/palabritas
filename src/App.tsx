@@ -19,7 +19,7 @@ function App() {
       return {
         guesses: [],
         currentGuess: '',
-        gameStatus: 'playing',
+        gameStatus: 'playing' as const,
         stats: {
           played: 0,
           won: 0,
@@ -33,7 +33,7 @@ function App() {
     return saved ? JSON.parse(saved) : {
       guesses: [],
       currentGuess: '',
-      gameStatus: 'playing',
+      gameStatus: 'playing' as const,
       stats: {
         played: 0,
         won: 0,
@@ -43,7 +43,7 @@ function App() {
       }
     };
   });
-  const [solution] = useState(() => getTodaysWord());
+  const [solution, setSolution] = useState(() => getTodaysWord());
   const [showError, setShowError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [showStats, setShowStats] = useState(false);
@@ -165,12 +165,29 @@ function App() {
 
   const resetGame = () => {
     if (window.confirm('¿Estás seguro de que quieres reiniciar el juego? Perderás tu progreso actual.')) {
-      setGameState({
+      // Obtener nueva palabra y actualizar el estado
+      const newWord = getTodaysWord();
+      setSolution(newWord);
+      
+      // Reiniciar estado del juego
+      const newGameState: GameState = {
         guesses: [],
         currentGuess: '',
-        gameStatus: 'playing',
-        stats: gameState.stats // Mantener las estadísticas generales
-      });
+        gameStatus: 'playing' as const,
+        stats: gameState.stats
+      };
+      
+      // Actualizar estado y localStorage
+      setGameState(newGameState);
+      localStorage.setItem('gameState', JSON.stringify(newGameState));
+      localStorage.removeItem('lastGuesses');
+      localStorage.removeItem('lastPlayedDate'); // Importante: limpiar la fecha
+      
+      // Cerrar modal y reiniciar otros estados
+      setShowStats(false);
+      setShowError(false);
+      setErrorMessage('');
+      setIsValidating(false);
     }
   };
 
@@ -234,6 +251,7 @@ function App() {
             gameStatus={gameState.gameStatus}
             solution={solution}
             onClose={() => setShowStats(false)}
+            onPlayAgain={resetGame}
           />
         )}
 

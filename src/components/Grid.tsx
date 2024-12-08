@@ -1,12 +1,19 @@
+import React from 'react';
 import { LetterState } from '../types/game';
 
 interface GridProps {
   guesses: string[];
   currentGuess: string;
   solution: string;
+  isRevealing?: boolean;
 }
 
-const Grid = ({ guesses, currentGuess, solution }: GridProps) => {
+export const Grid: React.FC<GridProps> = ({
+  guesses,
+  currentGuess,
+  solution,
+  isRevealing = false,
+}) => {
   const empties = Array(6 - (guesses.length + 1)).fill('');
   const currentGuessArray = currentGuess.split('').concat(Array(5 - currentGuess.length).fill(''));
 

@@ -14,7 +14,8 @@ export const Grid: React.FC<GridProps> = ({
   solution,
   isRevealing,
 }) => {
-  const empties = Array(6 - (guesses.length + 1)).fill('');
+  const emptySpaces = Math.max(0, 6 - (guesses.length + 1));
+  const empties = Array(emptySpaces).fill('');
   const currentGuessArray = currentGuess.split('').concat(Array(5 - currentGuess.length).fill(''));
 
   const getLetterState = (letter: string, index: number): LetterState => {

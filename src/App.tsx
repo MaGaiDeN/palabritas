@@ -217,6 +217,7 @@ function App() {
           guesses={gameState.guesses}
           currentGuess={gameState.currentGuess.toUpperCase()}
           solution={solution}
+          isRevealing={false}
         />
 
         <Keyboard
